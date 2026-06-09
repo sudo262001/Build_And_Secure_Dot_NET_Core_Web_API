@@ -7,6 +7,32 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("StudentApiCorsPolicy", policy =>
+    {
+        policy
+            .WithOrigins(
+                "https://example.com",
+                "http://example.com"
+            )//What to allow
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("StudentApiCorsPolicy2", policy =>
+    {
+        policy
+            .WithOrigins(
+                "https://*.example.com"
+            ).SetIsOriginAllowedToAllowWildcardSubdomains()//What to allow
+            .AllowAnyMethod().WithHeaders("Content-Type", "Authorization");
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
