@@ -84,14 +84,15 @@ using System.IdentityModel.Tokens.Jwt;`
 - `Microsoft.AspNetCore.Authentication.JwtBearer`
 - in program.cs
 - Authentication Configuration (Must be before authorization):
-- `builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer
+- ```csharp
+	builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer
 	(options =>
     {
         // TokenValidationParameters define how incoming JWTs will be validated.
         options.TokenValidationParameters = new TokenValidationParameters
         {
             // Ensures the token was issued by a trusted issuer.
-            ValidateIssuer = true,`
+            ValidateIssuer = true,
   		
             // Ensures the token is intended for this API (audience check).
             ValidateAudience = true,
@@ -118,14 +119,15 @@ using System.IdentityModel.Tokens.Jwt;`
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes("THIS_IS_A_VERY_SECRET_KEY_123456"))
         };
-		});`
+		});```
  -  `This enables attributes like [Authorize] and role-based authorization.
 builder.Services.AddAuthorization();`
  - `[Authorize] attribute if defined globally it enforces jwt on all endpoints`
  - Configure Swagger to test api with jwt token:
  - in program.cs: `using Microsoft.OpenApi.Models`
  - Register Swagger generator and customize its behavior:
-`builder.Services.AddSwaggerGen(options =>{
+```csharp
+builder.Services.AddSwaggerGen(options =>{
 	// ===============================
     // 1) Define the JWT Bearer security scheme
     // ===============================
@@ -135,7 +137,7 @@ builder.Services.AddAuthorization();`
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         // The name of the HTTP header where the token will be sent.
-        Name = "Authorization",`
+        Name = "Authorization",
 		
         // Indicates this is an HTTP authentication scheme.
         Type = SecuritySchemeType.Http,
@@ -182,4 +184,4 @@ builder.Services.AddAuthorization();`
             new string[] {}
         }
 		});
-		});`
+		});```
