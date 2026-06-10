@@ -54,19 +54,15 @@ For HTTPS it's all about configuration:
 - Separate CRUD operations from authentication (design best practice)
 Project Structure for now:
  `StudentApi
-?
-??? Controllers
-?   ??? StudentsController.cs   (student CRUD)
-?   ??? AuthController.cs       (authentication)
-?
-??? Models
-?   ??? Student.cs
-?   ??? LoginRequest.cs
-?
-??? DataSimulation
-?   ??? StudentDataSimulation.cs
-?
-??? Program.cs`
+		Controllers
+			StudentsController.cs   (student CRUD)
+			AuthController.cs       (authentication)
+  		Models
+		 	Student.cs
+		 	LoginRequest.cs
+  		DataSimulation
+			StudentDataSimulation.cs
+  Program.cs`
 #### JWT
 ##### Creation
 - Packages needed:
@@ -87,15 +83,15 @@ using System.IdentityModel.Tokens.Jwt;`
 ##### Verification (Middleware)
 - `Microsoft.AspNetCore.Authentication.JwtBearer`
 - in program.cs
-- Authentication Configuration (Must be before authorization)
-  	`builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer
+- Authentication Configuration (Must be before authorization):
+- `builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer
 	(options =>
     {
         // TokenValidationParameters define how incoming JWTs will be validated.
         options.TokenValidationParameters = new TokenValidationParameters
         {
             // Ensures the token was issued by a trusted issuer.
-            ValidateIssuer = true,
+            ValidateIssuer = true,`
   		
             // Ensures the token is intended for this API (audience check).
             ValidateAudience = true,
@@ -139,7 +135,7 @@ builder.Services.AddAuthorization();`
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         // The name of the HTTP header where the token will be sent.
-        Name = "Authorization",
+        Name = "Authorization",`
 		
         // Indicates this is an HTTP authentication scheme.
         Type = SecuritySchemeType.Http,
