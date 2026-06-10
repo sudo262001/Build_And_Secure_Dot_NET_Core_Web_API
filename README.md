@@ -88,16 +88,15 @@ using System.IdentityModel.Tokens.Jwt;`
 - `Microsoft.AspNetCore.Authentication.JwtBearer`
 - in program.cs
 - Authentication Configuration (Must be before authorization)
-`builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+  	`builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer
+	(options =>
     {
         // TokenValidationParameters define how incoming JWTs will be validated.
         options.TokenValidationParameters = new TokenValidationParameters
         {
             // Ensures the token was issued by a trusted issuer.
             ValidateIssuer = true,
-
-
+  		
             // Ensures the token is intended for this API (audience check).
             ValidateAudience = true,
 
@@ -123,17 +122,15 @@ using System.IdentityModel.Tokens.Jwt;`
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes("THIS_IS_A_VERY_SECRET_KEY_123456"))
         };
-    });`
--  `This enables attributes like [Authorize] and role-based authorization.
+		});`
+ -  `This enables attributes like [Authorize] and role-based authorization.
 builder.Services.AddAuthorization();`
  - `[Authorize] attribute if defined globally it enforces jwt on all endpoints`
  - Configure Swagger to test api with jwt token:
  - in program.cs: `using Microsoft.OpenApi.Models`
  - Register Swagger generator and customize its behavior:
- `// Register Swagger generator and customize its behavior.
-builder.Services.AddSwaggerGen(options =>
-{
-    // ===============================
+`builder.Services.AddSwaggerGen(options =>{
+	// ===============================
     // 1) Define the JWT Bearer security scheme
     // ===============================
     //
@@ -143,8 +140,7 @@ builder.Services.AddSwaggerGen(options =>
     {
         // The name of the HTTP header where the token will be sent.
         Name = "Authorization",
-
-
+		
         // Indicates this is an HTTP authentication scheme.
         Type = SecuritySchemeType.Http,
 
@@ -164,17 +160,15 @@ builder.Services.AddSwaggerGen(options =>
 
         // Text shown in Swagger UI to guide the user.
         Description = "Enter: Bearer {your JWT token}"
-    });
-
-
-    // ===============================
-    // 2) Require the Bearer scheme for secured endpoints
-    // ===============================
-    //
-    // This tells Swagger that endpoints protected by [Authorize]
-    // require the Bearer token defined above.
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
+		});
+		// ===============================
+		// 2) Require the Bearer scheme for secured endpoints
+		// ===============================
+		//
+		// This tells Swagger that endpoints protected by [Authorize]
+		// require the Bearer token defined above.
+		options.AddSecurityRequirement(new OpenApiSecurityRequirement
+		{
         {
             new OpenApiSecurityScheme
             {
@@ -191,5 +185,5 @@ builder.Services.AddSwaggerGen(options =>
             // This array is empty because JWT does not use OAuth scopes here.
             new string[] {}
         }
-    });
-});`
+		});
+		});`
