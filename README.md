@@ -46,14 +46,16 @@ For HTTPS it's all about configuration:
  - Or by attributes the named policy can be assigned to a specific endpoint
     `[EnableCors("Policy1")]`
  ** `app.UseCors();` in program.cs
+   
 ### Second: Authentication and JWT
+
 #### Authentication:
 - Fields required:
     Email, Password Hash, and Role
 ** BCrypt handles hashing and automatic salt generation
 - Separate CRUD operations from authentication (design best practice)
 Project Structure for now:
- `StudentApi
+  StudentApi
 		Controllers
 			StudentsController.cs   (student CRUD)
 			AuthController.cs       (authentication)
@@ -62,8 +64,11 @@ Project Structure for now:
 		 	LoginRequest.cs
   		DataSimulation
 			StudentDataSimulation.cs
-  Program.cs`
+  Program.cs
+
+  
 #### JWT
+
 ##### Creation
 - Packages needed:
 `using System.Security.Claims;
