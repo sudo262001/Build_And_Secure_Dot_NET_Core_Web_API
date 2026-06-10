@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Cors;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ using StudentAPI.Models;
 namespace StudentAPI.Controllers
 {
     //[Route("api/[controller]")]
+    [Authorize]
     [Route("api/Students")]
     [ApiController]
     public class StudentsController : ControllerBase
