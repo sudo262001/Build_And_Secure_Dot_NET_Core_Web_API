@@ -124,7 +124,8 @@ using System.IdentityModel.Tokens.Jwt;`
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes("THIS_IS_A_VERY_SECRET_KEY_123456"))
         };
-		});```
+		});
+	```
  -  `This enables attributes like [Authorize] and role-based authorization.
 builder.Services.AddAuthorization();`
  - `[Authorize] attribute if defined globally it enforces jwt on all endpoints`
@@ -189,7 +190,8 @@ builder.Services.AddSwaggerGen(options =>{
             new string[] {}
         }
 		});
-		});```
+		});
+```
 
 ### Third: Authorization
 
