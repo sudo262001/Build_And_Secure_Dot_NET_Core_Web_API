@@ -16,11 +16,13 @@ namespace StudentAPI.Controllers
     {
         private static List<Student> _Students = StudentDataSimulation.StudentsList;
 
+        [Authorize(Roles = "Admin")]
         [EnableCors("StudentApiCorsPolicy")]
         [HttpGet("All", Name = nameof(GetAllStudents))]
         [ProducesResponseType(typeof(IEnumerable<Student>), StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<Student>> GetAllStudents() => Ok(_Students);
 
+        [AllowAnonymous]
         [EnableCors("StudentApiCorsPolicy2")]
         [HttpGet("Passed", Name = nameof(GetPassedStudents))]
         [ProducesResponseType(typeof(IEnumerable<Student>), StatusCodes.Status200OK)]
@@ -32,10 +34,13 @@ namespace StudentAPI.Controllers
                 return NotFound("No one passed");
             return Ok(_PassedStudents);
         }
+
+        [AllowAnonymous]
         [HttpGet("Avg", Name = nameof(GetGradesAverage))]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public ActionResult<double> GetGradesAverage() => Ok(_Students.Any() ? _Students.Average(s => s.Grade) : 0);
         
+
         [HttpGet("{id}", Name = nameof(GetStudentById))]
         [ProducesResponseType(typeof(Student), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
@@ -46,6 +51,8 @@ namespace StudentAPI.Controllers
                 return NotFound($"There is no student with Id: {id}");
             return Ok(Student);
         }
+
+        [Authorize(Roles = "Admin")]
         [HttpPost(Name = nameof(AddStudent))]
         [ProducesResponseType(typeof(Student), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
@@ -59,6 +66,8 @@ namespace StudentAPI.Controllers
             _Students.Add(student);
             return CreatedAtRoute(nameof(GetStudentById), new { id = student.Id }, student);
         }
+
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id:int}",Name = nameof(DeleteStudent))]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
@@ -72,6 +81,8 @@ namespace StudentAPI.Controllers
             _Students.Remove(student);
             return NoContent();
         }
+
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id:int}", Name = nameof(UpdateStudent))]
         [ProducesResponseType(typeof(Student), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]

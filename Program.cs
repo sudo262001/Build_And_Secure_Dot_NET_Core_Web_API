@@ -49,7 +49,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             // The secret key used to validate the JWT signature.
             // This must be the same key used when generating the token.
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("THIS_IS_A_VERY_SECRET_KEY_123456"))
+                Encoding.UTF8.GetBytes("Shared_Key_To_Verify_Must_Be_>256"))
         };
     });
 

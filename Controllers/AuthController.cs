@@ -44,6 +44,7 @@ namespace StudentAPI.Controllers
                 claims: Claims,
                 expires: DateTime.Now.AddMinutes(30),
                 signingCredentials: Creds);
+                
             //Return the token
             return Ok(
                 new 

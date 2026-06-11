@@ -190,3 +190,21 @@ builder.Services.AddSwaggerGen(options =>{
         }
 		});
 		});```
+
+### Third: Authorization
+
+- Step 1: Identify Public Endpoints
+    GET /api/Students/Passed
+    GET /api/Students/AverageGrade
+
+    ** By adding `[AllowAnonymous]` attribute
+
+- Step 2: `[Authorize] Globally for the controller --Already done for JWT`
+
+- Step 3: Restrict Admin Only Endpoints
+    GET /api/Students/All
+    POST /api/Students
+    PUT /api/Students/{id}
+    DELETE /api/Students/{id}
+
+    ** By adding `[Authorize(Roles = "Admin")]` attribute
