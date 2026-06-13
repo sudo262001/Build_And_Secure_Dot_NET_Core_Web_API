@@ -211,7 +211,7 @@ builder.Services.AddSwaggerGen(options =>{
 
     ** By adding `[Authorize(Roles = "Admin")]` attribute
 
-    ### Forth: Owenership
+    #### Owenership
 
     Authorization step earlier only classified endpoints as public or for admins, how about an authenticated student
     who is trying to access other student/s information (horizontal privilege escalation)
@@ -223,3 +223,65 @@ builder.Services.AddSwaggerGen(options =>{
             var userRole = User.FindFirstValue(ClaimTypes.Role);
     ```
     `User` represents the authenticated user who made the request
+
+    #### Policy-based authorization
+
+    For a more structured and modern way to implement authorization rules on each endpoint
+    define a rule once and apply it through the authorization system
+    `AuthorizeAsync(User, id, "StudentOwnerOrAdmin")`
+    ##### How the evaluation actually works:
+    - Controller receives the request
+    - Controller knows the resource ID (id)
+    - Controller asks the authorization system
+    - ASP.NET Core then:
+    Finds the policy
+    Finds the requirement
+    Finds the handler
+    Passes the id to the handler
+    Makes the final authorization decision
+    ##### Implementation
+- Create a new folder Authorization:
+    This class represents the authorization rule itself.
+    It does NOT contain logic it simply defines the requirement "Owner OR Admin can access the student resource".
+    Inherits from IAuthorizationRequirement
+    - StudentOwnerOrAdminRequirement.cs
+    This authorization handler enforces the ownership rule for student resources.
+    Inherits from AuthorizationHandler<StudentOwnerOrAdminRequirement, int>
+    - StudentOwnerOrAdminHandler.cs
+ - Register the handler in `program.cs`:
+    `builder.Services.AddSingleton<IAuthorizationHandler, StudentOwnerOrAdminHandler>();`
+ - Register the policy in `program.cs`:
+```
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("StudentOwnerOrAdmin", policy =>
+        policy.Requirements.Add(new StudentOwnerOrAdminRequirement()));
+});
+```
+ - Use the policy in the endpoint:
+```
+[HttpGet("{id}", Name = "GetStudentById")]
+public async Task<ActionResult<Student>> GetStudentById(
+    int id,
+    [FromServices] IAuthorizationService authorizationService)
+{
+    if (id < 1)
+        return BadRequest("Invalid student id.");
+
+    var student = StudentDataSimulation.StudentsList
+        .FirstOrDefault(s => s.Id == id);
+
+    if (student == null)
+        return NotFound("Student not found.");
+
+    var authResult = await authorizationService.AuthorizeAsync(
+        User,
+        id,
+        "StudentOwnerOrAdmin");
+
+    if (!authResult.Succeeded)
+        return Forbid(); // 403
+
+    return Ok(student);
+}
+```

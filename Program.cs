@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using StudentAPI.Authorization;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -156,6 +158,8 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod().WithHeaders("Content-Type", "Authorization");
     });
 });
+
+builder.Services.AddSingleton<IAuthorizationHandler, StudentOwnerOrAdminHandler>();
 
 var app = builder.Build();
 

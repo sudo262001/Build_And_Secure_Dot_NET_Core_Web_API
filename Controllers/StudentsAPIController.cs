@@ -46,21 +46,24 @@ namespace StudentAPI.Controllers
         [ProducesResponseType(typeof(Student), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(string), StatusCodes.Status403Forbidden)]
-        public ActionResult<Student> GetStudentById(int id)
+        public async Task<ActionResult<Student>> GetStudentById(int id,
+            [FromServices] IAuthorizationService authorizationService)
         {
-            var Student = _Students.FirstOrDefault(s => s.Id == id);
-            if (Student == null)
-                return NotFound($"There is no student with Id: {id}");
-            //Extract the authenticated user's id from the jwt --Extracted as a string
-            var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var userRole = User.FindFirstValue(ClaimTypes.Role);
-            int studentID = int.Parse(userID.ToString());
-            bool isAdmin = userRole == "Admin";
-            if (!isAdmin && studentID != id)
-            {
-                return Forbid();
-            }
-            return Ok(Student);
+            var student = StudentDataSimulation.StudentsList
+                .FirstOrDefault(s => s.Id == id);
+
+            if (student == null)
+                return NotFound("Student not found.");
+
+            var authResult = await authorizationService.AuthorizeAsync(
+                User,
+                id,
+                "StudentOwnerOrAdmin");
+
+            if (!authResult.Succeeded)
+                return Forbid(); 
+
+            return Ok(student);
         }
 
         [Authorize(Roles = "Admin")]
