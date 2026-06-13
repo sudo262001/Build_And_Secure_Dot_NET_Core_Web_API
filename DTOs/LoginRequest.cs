@@ -1,4 +1,4 @@
-﻿namespace StudentAPI.Models
+﻿namespace StudentAPI.DTOs
 {
     public class LoginRequest
     {

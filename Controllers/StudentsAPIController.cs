@@ -15,6 +15,16 @@ namespace StudentAPI.Controllers
     [ApiController]
     public class StudentsController : ControllerBase
     {
+
+        private readonly ILogger<StudentsController> _logger;
+
+        public StudentsController(ILogger<StudentsController> logger)
+        {
+            _logger = logger;
+        }
+
+
+
         private static List<Student> _Students = StudentDataSimulation.StudentsList;
 
         [Authorize(Roles = "Admin")]
@@ -87,12 +97,42 @@ namespace StudentAPI.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
         public ActionResult<Student> DeleteStudent(int id)
         {
+            var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "unknown";
+
+
             var student = _Students.FirstOrDefault(s=> s.Id == id);
             if (student == null)
             {
-                return NotFound($"Student with id {id} not found");
+                // Audit: admin attempted to delete a non-existing student
+                _logger.LogWarning(
+                    "Admin action failed (target not found). AdminId={AdminId}, Action=DeleteStudent, TargetId={TargetId}, IP={IP}",
+                    adminId,
+                    id,
+                    ip
+                );
+
+                return NotFound($"Student with ID {id} not found.");
             }
+            // If delete throws or fails later, you still have the audit record of the attempt.
+            _logger.LogInformation(
+            "Admin action started. AdminId={AdminId}, Action=DeleteStudent, TargetId={TargetId}, TargetEmail={TargetEmail}, IP={IP}",
+            adminId,
+            student.Id,
+            student.Email,
+            ip
+            );
+
             _Students.Remove(student);
+            // Optional log after deletion
+
+            _logger.LogInformation(
+            "Admin action succeeded. AdminId={AdminId}, Action=DeleteStudent, TargetId={TargetId}, IP={IP}",
+            adminId,
+            id,
+            ip
+            );
+
             return NoContent();
         }
 
