@@ -208,3 +208,16 @@ builder.Services.AddSwaggerGen(options =>{
     DELETE /api/Students/{id}
 
     ** By adding `[Authorize(Roles = "Admin")]` attribute
+
+    ### Forth: Owenership
+
+    Authorization step earlier only classified endpoints as public or for admins, how about an authenticated student
+    who is trying to access other student/s information (horizontal privilege escalation)
+    
+    - Step 1: Extracting claims defined in the jwt (role & id)
+    - Step 2: Allowing only admins and the owner of the information to access endpoints that return info of a certain student
+    ```
+            var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userRole = User.FindFirstValue(ClaimTypes.Role);
+    ```
+    `User` represents the authenticated user who made the request

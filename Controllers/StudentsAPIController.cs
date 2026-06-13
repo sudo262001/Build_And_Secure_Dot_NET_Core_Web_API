@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using StudentAPI.DataSimulation;
 using StudentAPI.Models;
+using System.Security.Claims;
 
 namespace StudentAPI.Controllers
 {
@@ -44,11 +45,21 @@ namespace StudentAPI.Controllers
         [HttpGet("{id}", Name = nameof(GetStudentById))]
         [ProducesResponseType(typeof(Student), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status403Forbidden)]
         public ActionResult<Student> GetStudentById(int id)
         {
             var Student = _Students.FirstOrDefault(s => s.Id == id);
             if (Student == null)
                 return NotFound($"There is no student with Id: {id}");
+            //Extract the authenticated user's id from the jwt --Extracted as a string
+            var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userRole = User.FindFirstValue(ClaimTypes.Role);
+            int studentID = int.Parse(userID.ToString());
+            bool isAdmin = userRole == "Admin";
+            if (!isAdmin && studentID != id)
+            {
+                return Forbid();
+            }
             return Ok(Student);
         }
 
